@@ -21,12 +21,16 @@ public class S3Service {
 
     //Bucket level operations
 
-    public void createS3Bucket(String bucketName) {
+    public void createS3Bucket(String bucketName, boolean publicBucket) {
         if(amazonS3Client.doesBucketExist(bucketName)) {
             log.info("Bucket name already in use. Try another name.");
             return;
         }
-        amazonS3Client.createBucket(bucketName);
+        if(publicBucket) {
+            amazonS3Client.createBucket(bucketName);
+        } else {
+            amazonS3Client.createBucket(new CreateBucketRequest(bucketName).withCannedAcl(CannedAccessControlList.Private));
+        }
     }
 
     public List<Bucket> listBuckets(){
@@ -43,12 +47,30 @@ public class S3Service {
     }
 
     //Object level operations
-    public void putObject(String bucketName, BucketObjectRepresentaion representation) throws IOException {
+    public void putObject(String bucketName, BucketObjectRepresentaion representation, boolean publicObject) throws IOException {
 
-        amazonS3Client.putObject(
-                "s3:///" + bucketName,
-                "/" + representation.getObjectName(),
-                new File(representation.getObjectName()));
+        String objectName = representation.getObjectName();
+        String objectValue = representation.getText();
+
+        File file = new File("." + File.separator + objectName);
+        FileWriter fileWriter = new FileWriter(file, false);
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        printWriter.println(objectValue);
+        printWriter.flush();
+        printWriter.close();
+
+        try {
+            if(publicObject) {
+                var putObjectRequest = new PutObjectRequest(bucketName, objectName, file).withCannedAcl(CannedAccessControlList.PublicRead);
+                amazonS3Client.putObject(putObjectRequest);
+            } else {
+                var putObjectRequest = new PutObjectRequest(bucketName, objectName, file).withCannedAcl(CannedAccessControlList.Private);
+                amazonS3Client.putObject(putObjectRequest);
+            }
+        } catch (Exception e){
+            log.error("Some error has ocurred.");
+        }
+
     }
 
     public List<S3ObjectSummary> listObjects(String bucketName){
