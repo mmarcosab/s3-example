@@ -48,9 +48,9 @@ public class ControllerTests {
         return new File("./" + objectName);
     }
 
-    @PatchMapping(value = "/{bucketName}/objects/{objectName}/{bucketSource}")
-    public void moveObject(@PathVariable String bucketName, @PathVariable String objectName, @PathVariable String bucketSource) throws IOException {
-        s3Service.moveObject(bucketName, objectName, bucketSource);
+    @PatchMapping(value = "/{bucketSourceName}/objects/{objectName}/{bucketTargetName}")
+    public void moveObject(@PathVariable String bucketSourceName, @PathVariable String objectName, @PathVariable String bucketTargetName) throws IOException {
+        s3Service.moveObject(bucketSourceName, objectName, bucketTargetName);
     }
 
     @GetMapping(value = "/{bucketName}/objects")
