@@ -43,28 +43,28 @@ public class ControllerTests {
     }
 
     @GetMapping(value = "/{bucketName}/objects/{objectName}")
-    public File downloadObject(@PathVariable String bucketName, @PathVariable String objectName) throws IOException {
+    public File downloadObject(@PathVariable String bucketName, @PathVariable String objectName) {
         s3Service.downloadObject(bucketName, objectName);
         return new File("./" + objectName);
     }
 
     @PatchMapping(value = "/{bucketSourceName}/objects/{objectName}/{bucketTargetName}")
-    public void moveObject(@PathVariable String bucketSourceName, @PathVariable String objectName, @PathVariable String bucketTargetName) throws IOException {
+    public void moveObject(@PathVariable String bucketSourceName, @PathVariable String objectName, @PathVariable String bucketTargetName) {
         s3Service.moveObject(bucketSourceName, objectName, bucketTargetName);
     }
 
     @GetMapping(value = "/{bucketName}/objects")
-    public List<String> listObjects(@PathVariable String bucketName) throws IOException {
+    public List<String> listObjects(@PathVariable String bucketName) {
         return s3Service.listObjects(bucketName).stream().map(S3ObjectSummary::getKey).collect(Collectors.toList());
     }
 
     @DeleteMapping(value = "/{bucketName}/objects/{objectName}")
-    public void deleteObject(@PathVariable String bucketName, @PathVariable String objectName) throws IOException {
+    public void deleteObject(@PathVariable String bucketName, @PathVariable String objectName) {
         s3Service.deleteObject(bucketName, objectName);
     }
 
     @DeleteMapping(value = "/{bucketName}/objects")
-    public void deleteObject(@PathVariable String bucketName, @RequestBody List<String> objects) throws IOException {
+    public void deleteObject(@PathVariable String bucketName, @RequestBody List<String> objects) {
         s3Service.deleteMultipleObjects(bucketName, objects);
     }
 
