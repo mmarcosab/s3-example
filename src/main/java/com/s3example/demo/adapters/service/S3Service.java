@@ -99,12 +99,16 @@ public class S3Service {
     }
 
     public void moveObject(String bucketSourceName, String objectName, String bucketTargetName){
-        amazonS3Client.copyObject(
-                bucketSourceName,
-                objectName,
-                bucketTargetName,
-                objectName
-        );
+        try {
+            amazonS3Client.copyObject(
+                    bucketSourceName,
+                    objectName,
+                    bucketTargetName,
+                    objectName
+            );
+        } catch (AmazonS3Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
 }
